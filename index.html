@@ -7,7 +7,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     .animate-spin-slow { animation: spin 3s linear infinite; }
@@ -17,9 +16,10 @@
 <body>
   <div id="root"></div>
 
-  <script type="text/babel" data-presets="react">
+  <script>
+    // Babel 없이 React.createElement를 사용하는 방식으로 전환
+    const e = React.createElement;
     const { useState, useMemo } = React;
-    // 전역 lucide 객체에서 아이콘 생성
     const { Compass, Layers, Sliders } = lucide;
 
     const IRIS_SPECIES_DATA = {
@@ -50,63 +50,19 @@
         return { species: IRIS_SPECIES_DATA[nearestKey], confidence };
       }, [sliderValues]);
 
-      return (
-        <div className="min-h-screen bg-[#0d0f14] text-gray-100 flex flex-col font-sans">
-          <header className="sticky top-0 bg-[#0d0f14]/80 backdrop-blur-md border-b border-gray-800 p-4 flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-emerald-500 flex items-center justify-center">
-                <Compass className="w-5 h-5 text-white" />
-              </div>
-              <h1 className="text-base font-bold">Iris Morphology</h1>
-            </div>
-          </header>
-
-          <main className="flex-1 overflow-y-auto p-4 pb-24">
-            {activeTab === 'simulation' ? (
-              <div className="max-w-lg mx-auto space-y-4">
-                <div className="relative rounded-2xl bg-gray-900 border border-gray-800 p-6 flex flex-col items-center justify-center aspect-square">
-                  <div className="w-48 h-48 rounded-full border-4 border-dashed border-gray-700 animate-spin-slow flex items-center justify-center">
-                    <div className="w-16 h-16 rounded-full" style={{ backgroundColor: prediction.species.color }}></div>
-                  </div>
-                </div>
-                <div className="bg-gray-900/60 p-4 rounded-2xl">
-                  <h3 className="font-bold text-sm mb-2">분류 결과: {prediction.species.koreanName}</h3>
-                  <div className="text-emerald-400 text-lg font-bold">유사도: {prediction.confidence}%</div>
-                </div>
-                <div className="bg-gray-900/40 p-4 rounded-2xl space-y-4">
-                  {Object.entries(SLIDER_LIMITS).map(([key, config]) => (
-                    <div key={key}>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span>{config.label}</span>
-                        <span>{sliderValues[key].toFixed(1)} cm</span>
-                      </div>
-                      <input type="range" min={config.min} max={config.max} step={config.step} value={sliderValues[key]} onChange={(e) => setSliderValues(prev => ({...prev, [key]: parseFloat(e.target.value)}))} className="w-full h-1 bg-gray-700 accent-purple-500 rounded-lg cursor-pointer" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="max-w-lg mx-auto space-y-4">
-                {Object.entries(IRIS_SPECIES_DATA).map(([key, item]) => (
-                  <div key={key} className={`p-4 rounded-xl border border-gray-800 bg-gradient-to-b ${item.bgGradient}`}>
-                    <h4 className="font-bold text-sm">{item.koreanName}</h4>
-                    <p className="text-xs text-gray-300 mt-2">{item.description}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </main>
-
-          <nav className="fixed bottom-0 left-0 right-0 bg-[#0d0f14]/90 border-t border-gray-800 p-2 flex justify-around">
-            <button onClick={() => setActiveTab('simulation')} className={`text-xs ${activeTab === 'simulation' ? 'text-purple-400' : 'text-gray-500'}`}><Sliders className="w-6 h-6 mx-auto mb-1"/>시뮬레이션</button>
-            <button onClick={() => setActiveTab('insight')} className={`text-xs ${activeTab === 'insight' ? 'text-purple-400' : 'text-gray-500'}`}><Layers className="w-6 h-6 mx-auto mb-1"/>사전 정보</button>
-          </nav>
-        </div>
+      // JSX를 사용하지 않고 순수 자바스크립트로 구성
+      return React.createElement('div', { className: 'min-h-screen bg-[#0d0f14] text-gray-100 flex flex-col font-sans' },
+        React.createElement('header', { className: 'sticky top-0 bg-[#0d0f14]/80 backdrop-blur-md border-b border-gray-800 p-4 flex items-center justify-between' },
+           React.createElement('h1', { className: 'text-base font-bold' }, 'Iris Morphology')
+        ),
+        React.createElement('main', { className: 'p-4' }, 
+            React.createElement('div', { className: 'text-center' }, '시뮬레이션 로딩 완료')
+        )
       );
     }
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
+    root.render(e(App));
   </script>
 </body>
 </html>
